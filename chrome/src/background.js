@@ -1,6 +1,6 @@
-<!--
+/*
 
-	background.htm is part of Ponify (Chrome Extension)
+	background.js is part of Ponify (Chrome Extension)
 
 	Copyright 2011 Ben Ashton <ben_ashton@gmx.co.uk>
 
@@ -18,15 +18,10 @@
 	along with Ponify; if not, write to the Free Software
 	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 	MA 02110-1301, USA.
-	
--->
 
+*/
 
-<html>
-	<head>
-		<script src="src/init.js"></script>
-		<script type="text/JavaScript">
-			chrome.extension.onRequest.addListener(function(request, sender, sendResponse){
+chrome.extension.onRequest.addListener(function(request, sender, sendResponse){
 				if(request.method == "update"){
 					chrome.tabs.getSelected(null, function(tab) {
 						updateIcon(tab);
@@ -44,46 +39,46 @@
 					});
 				}
 			});
-			
-			
+
+
 			function updateIcon(tab){
 				var websites = JSON.parse(localStorage["websiteList"]);
 				var wlist_type = JSON.parse(localStorage["wlist_type"]);
 				var ponify_enabled = JSON.parse(localStorage["ponify_enabled"]);
-				
+
 				var ponify = 0;
 
 				if(ponify_enabled){
 					ponify = 1;
-					
+
 					if(!websites.length && wlist_type){
 						ponify = 0;
 					}
 
 					var r = /([^\/]+:\/\/)?(www\.)?(([^\/]*)[^\?#]*)/;
 					var a = r.exec(tab.url);
-					
+
 					for(var i = 0; i < websites.length; i++){
-						
+
 						var b = r.exec(websites[i][0])[3];
 
 						if((a[3].substr(0, b.length) == b) != wlist_type){
 							ponify = 0;
 						}
 					}
-					
+
 					if(a[1] != "http://" && a[1] != "https://"){
 						ponify = 0;
 					}
 				}
 
 				if (ponify) {
-					chrome.browserAction.setIcon({path:"img/19.png", tabId: tab.id});
+					chrome.browserAction.setIcon({path:"img/rh16.png", tabId: tab.id});
 				} else {
-					chrome.browserAction.setIcon({path:"img/19grey.png", tabId: tab.id});
+					chrome.browserAction.setIcon({path:"img/rh16gray.png", tabId: tab.id});
 				}
 			}
-			
+
 			chrome.tabs.onUpdated.addListener(function(tabid, changeInfo, tab) {
 				if (tab.selected){
 					chrome.tabs.get(tabid, updateIcon);
@@ -92,7 +87,3 @@
 			chrome.tabs.onSelectionChanged.addListener(function(tabid, selectInfo) {
 				chrome.tabs.get(tabid, updateIcon);
 			});
-		</script>
-	</head>
-</html>
-
