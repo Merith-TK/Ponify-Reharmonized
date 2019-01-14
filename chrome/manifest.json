@@ -35,7 +35,7 @@
         "persistent": true
     },
     "version": "19.1.13",
-    "description": "Ponify is a tool for replacing all human words with a ponified variations",
+    "description": "Ponify is a tool for replacing all human words with a ponified variations revived. Thank you, Ben Ashton.",
     "permissions": [
         "tabs",
         "http://*/*",
