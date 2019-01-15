@@ -10,5 +10,15 @@ Years ago, Ponify was my *favorite* browser extension!
 Thank you Ben for creating this lovely add-on.
 Whatever you're doing these days? Good luck to you!
 
+### Browser Compatabillity
+Platform | Status
+--- | ---
+Google Chrome | Working
+Chromium | Working
+Mozilla Firefox | Working
+Mozilla Firefox (Android) | Untested
+Opera | Working
+Userscript | Untested
+
 ## Original Video by Ben
 [![IMAGE ALT TEXT HERE](http://img.youtube.com/vi/xsMgwPSxPgM/0.jpg)](http://www.youtube.com/watch?v=xsMgwPSxPgM)
