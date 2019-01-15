@@ -1,0 +1,6 @@
+#Ignore Build Dir & Built Extension files
+build/*
+*.crx
+*.nex
+*.pem
+*.xpi
