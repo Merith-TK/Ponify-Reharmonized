@@ -32,10 +32,10 @@
             "src/init.js",
             "src/background.js"
         ],
-        "persistent": true
+        "persistent": false
     },
-    "version": "19.1.13",
-    "description": "Ponify is a tool for replacing all human words with a ponified variations revived. Thank you, Ben Ashton.",
+    "version": "19.1.14",
+    "description": "Ponify Reharmonized is a tool for replacing all human words with a ponified variations. Thank you, Ben Ashton.",
     "permissions": [
         "tabs",
         "http://*/*",

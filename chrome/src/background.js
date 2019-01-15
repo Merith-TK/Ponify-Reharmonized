@@ -21,69 +21,76 @@
 
 */
 
-chrome.extension.onRequest.addListener(function(request, sender, sendResponse){
-				if(request.method == "update"){
-					chrome.tabs.getSelected(null, function(tab) {
-						updateIcon(tab);
-					});
-					sendResponse({});
-				} else{
-					sendResponse({
-						url: sender.tab.url,
-						replace: JSON.parse(localStorage["replaceList"]),
-						websites: JSON.parse(localStorage["websiteList"]),
-						wlist_type: JSON.parse(localStorage["wlist_type"]),
-						ponify_enabled: JSON.parse(localStorage["ponify_enabled"]),
-						pseudo_threading: JSON.parse(localStorage["pseudo_threading"]),
-						highlight: JSON.parse(localStorage["highlight"])
-					});
-				}
-			});
+/* Depreciated
+ * chrome.extension.onRequest
+ * chrome.tabs.getSelected
+ */
+
+chrome.runtime.onMessage.addListener( (request, sender, sendResponse) => {
+	if(request.method == "update"){
+		//May cause issues with multiple windows?
+		chrome.tabs.query( { active: true }, tabs => tabs.forEach( tab => updateIcon(tab) ) );
+		sendResponse({})
+	} else if ( request.method == "getStorage" ){
+		sendResponse({
+			url: sender.tab.url,
+			replace: JSON.parse(localStorage["replaceList"]),
+			websites: JSON.parse(localStorage["websiteList"]),
+			wlist_type: JSON.parse(localStorage["wlist_type"]),
+			ponify_enabled: JSON.parse(localStorage["ponify_enabled"]),
+			pseudo_threading: JSON.parse(localStorage["pseudo_threading"]),
+			highlight: JSON.parse(localStorage["highlight"])
+		});
+	}
+});
 
 
-			function updateIcon(tab){
-				var websites = JSON.parse(localStorage["websiteList"]);
-				var wlist_type = JSON.parse(localStorage["wlist_type"]);
-				var ponify_enabled = JSON.parse(localStorage["ponify_enabled"]);
+function updateIcon(tab){
+	var websites = JSON.parse(localStorage["websiteList"]);
+	var wlist_type = JSON.parse(localStorage["wlist_type"]);
+	var ponify_enabled = JSON.parse(localStorage["ponify_enabled"]);
 
-				var ponify = 0;
+	var ponify = 0;
 
-				if(ponify_enabled){
-					ponify = 1;
+	if(ponify_enabled){
+		ponify = 1;
 
-					if(!websites.length && wlist_type){
-						ponify = 0;
-					}
+		if(!websites.length && wlist_type){
+			ponify = 0;
+		}
 
-					var r = /([^\/]+:\/\/)?(www\.)?(([^\/]*)[^\?#]*)/;
-					var a = r.exec(tab.url);
+		var r = /([^\/]+:\/\/)?(www\.)?(([^\/]*)[^\?#]*)/;
+		var a = r.exec(tab.url);
 
-					for(var i = 0; i < websites.length; i++){
+		for(var i = 0; i < websites.length; i++){
 
-						var b = r.exec(websites[i][0])[3];
+			var b = r.exec(websites[i][0])[3];
 
-						if((a[3].substr(0, b.length) == b) != wlist_type){
-							ponify = 0;
-						}
-					}
-
-					if(a[1] != "http://" && a[1] != "https://"){
-						ponify = 0;
-					}
-				}
-
-				if (ponify) {
-					chrome.browserAction.setIcon({path:"img/rh16.png", tabId: tab.id});
-				} else {
-					chrome.browserAction.setIcon({path:"img/rh16gray.png", tabId: tab.id});
-				}
+			if((a[3].substr(0, b.length) == b) != wlist_type){
+				ponify = 0;
 			}
+		}
 
-			chrome.tabs.onUpdated.addListener(function(tabid, changeInfo, tab) {
-				if (tab.selected){
-					chrome.tabs.get(tabid, updateIcon);
-				}
-			});
-			chrome.tabs.onSelectionChanged.addListener(function(tabid, selectInfo) {
-				chrome.tabs.get(tabid, updateIcon);
-			});
+		if(a[1] != "http://" && a[1] != "https://"){
+			ponify = 0;
+		}
+	}
+
+	if (ponify) {
+		chrome.browserAction.setIcon({path:"img/rh16.png", tabId: tab.id});
+	} else {
+		chrome.browserAction.setIcon({path:"img/rh16gray.png", tabId: tab.id});
+	}
+}
+
+//Updates Icon in UI when refreshing or navigating
+chrome.tabs.onUpdated.addListener( (tabid, changeInfo, tab) => {
+	if (tab.selected){
+		chrome.tabs.get(tabid, updateIcon);
+	}
+});
+
+//Updates Icon in UI when changing tabs
+chrome.tabs.onActivated.addListener( activeInfo => {
+	chrome.tabs.get(activeInfo.tabId, updateIcon);
+});
