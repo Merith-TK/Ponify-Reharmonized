@@ -18,7 +18,7 @@ Chromium | Working
 Mozilla Firefox | Working
 Mozilla Firefox (Android) | Untested
 Opera | Working
-Userscript | Untested
+Userscript | Working
 
 ## Original Video by Ben
 [![IMAGE ALT TEXT HERE](http://img.youtube.com/vi/xsMgwPSxPgM/0.jpg)](http://www.youtube.com/watch?v=xsMgwPSxPgM)
