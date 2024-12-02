@@ -21,7 +21,7 @@
 	along with Ponify; if not, write to the Free Software
 	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 	MA 02110-1301, USA.
-	
+
 */
 
 var Ponify = {};
@@ -425,21 +425,21 @@ Ponify.pseudoThread = function (text_nodes) {
 	}
 }
 
-// Ponify the contents of elem and all child nodes
 Ponify.ponify = function (elem) {
-	if (elem.nodeType == 3) {
+	if (elem.nodeType === 3) {
 		var p = elem.parentNode;
 
-		if (!p) { return; }
+		if (!p) return;
 
 		var p_name = p.nodeName;
-		if (p_name != "STYLE" && p_name != "SCRIPT" && p_name != "TEXTAREA") {
+		if (p_name !== "STYLE" && p_name !== "SCRIPT" && p_name !== "TEXTAREA") {
 			this.ponifyReplace(elem);
 		}
 	} else {
 		var text_nodes = document.evaluate(
 			".//text()[not(ancestor::script) and not(ancestor::style) and not(ancestor::textarea)]",
-			elem, null, XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE, null);
+			elem, null, XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE, null
+		);
 
 		if (text_nodes.snapshotLength) {
 			if (this.pseudo_threading) {
@@ -453,21 +453,33 @@ Ponify.ponify = function (elem) {
 			}
 		}
 	}
-}
+};
 
-// Ponify nodes that are added to the document
-Ponify.nodeInserted = function (event) {
-	if (!this.DOMLock) {
-		Ponify.ponify(event.target);
-	}
-}
+// Use MutationObserver to observe added nodes
+Ponify.observeDOMChanges = function () {
+	const observer = new MutationObserver((mutationsList) => {
+		for (const mutation of mutationsList) {
+			if (mutation.type === 'childList') {
+				mutation.addedNodes.forEach((node) => {
+					if (node.nodeType === Node.ELEMENT_NODE || node.nodeType === Node.TEXT_NODE) {
+						Ponify.ponify(node);
+					}
+				});
+			}
+		}
+	});
 
+	observer.observe(document.body, {
+		childList: true, // Observe changes to child elements
+		subtree: true    // Observe all descendants
+	});
+};
 
 Ponify.DOMLock = false;
 Ponify.enabled = Ponify.urlCheck();
 
-
 if (Ponify.enabled) {
-	Ponify.ponify(document);
-	document.addEventListener("DOMNodeInserted", Ponify.nodeInserted, true);
+	Ponify.ponify(document); // Ponify the existing document
+	Ponify.observeDOMChanges(); // Start observing for new nodes
 }
+
